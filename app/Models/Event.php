@@ -14,7 +14,7 @@ class Event extends Model
     protected $casts = [
         'images' => 'array',
         'date' => 'datetime',
-        'isActive' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function tickets()

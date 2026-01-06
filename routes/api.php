@@ -17,6 +17,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+    // get list of events
+    Route::get('/events', [EventController::class, 'index']);
 });
 
 // Admin Only

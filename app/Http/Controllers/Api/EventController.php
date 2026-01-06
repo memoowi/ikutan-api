@@ -40,4 +40,21 @@ class EventController extends Controller
 
         return $this->successResponse($event, 'Event created successfully', 201);
     }
+    public function index(Request $request)
+    {
+        $userRole = $request->user()->role;
+
+        // 1. Check for Unauthorized roles early (Guard Clause)
+        if (!in_array($userRole, ['admin', 'staff', 'attendee'])) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
+
+
+        $events = Event::withCount('tickets')
+            ->when($userRole === 'attendee', fn($query) => $query->where('is_active', true))
+            ->latest()
+            ->get();
+
+        return $this->successResponse($events, 'Events fetched successfully', 200);
+    }
 }
