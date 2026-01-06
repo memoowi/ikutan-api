@@ -49,8 +49,12 @@ class EventController extends Controller
             return $this->errorResponse('Unauthorized access', 403);
         }
 
-
-        $events = Event::withCount('tickets')
+        $events = Event::withCount([
+            'tickets' => function ($query) {
+                // Only count tickets where is_canceled_by_user is false
+                $query->where('is_canceled_by_user', false);
+            },
+        ])
             ->when($userRole === 'attendee', fn($query) => $query->where('is_active', true))
             ->latest()
             ->get();
