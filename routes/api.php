@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EventController;
+use App\Http\Controllers\Api\TicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,3 +33,8 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::patch('/events/{event}', [EventController::class, 'toggle']);
 });
 
+// Attendee Only
+Route::middleware(['auth:sanctum', 'role:attendee'])->group(function () {
+    // create ticket
+    Route::post('/tickets', [TicketController::class, 'store']);
+});
