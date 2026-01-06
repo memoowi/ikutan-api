@@ -26,6 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Admin Only
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    // create event
     Route::post('/events', [EventController::class, 'store']);
+    // toggle event status
+    Route::patch('/events/{event}', [EventController::class, 'toggle']);
 });
 

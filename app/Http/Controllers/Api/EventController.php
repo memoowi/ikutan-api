@@ -81,4 +81,9 @@ class EventController extends Controller
 
         return $this->successResponse($event, 'Event fetched successfully');
     }
+    public function toggle(Event $event)
+    {
+        $event->update(['is_active' => !$event->is_active]);
+        return $this->successResponse($event, 'Event status updated successfully');
+    }
 }
