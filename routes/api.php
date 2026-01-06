@@ -37,4 +37,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 Route::middleware(['auth:sanctum', 'role:attendee'])->group(function () {
     // create ticket
     Route::post('/tickets', [TicketController::class, 'store']);
+    // cancel ticket
+    Route::patch('/tickets/{ticket}', [TicketController::class, 'cancel']);
 });

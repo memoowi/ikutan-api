@@ -60,4 +60,20 @@ class TicketController extends Controller
             return $this->errorResponse('Failed to reserve ticket: ' . $e->getMessage(), 500);
         }
     }
+    public function cancel(Request $request, Ticket $ticket)
+    {
+        $user = $request->user();
+
+        if ($ticket->user_id !== $user->id) {
+            return $this->errorResponse('You are not authorized to cancel this ticket.', 403);
+        }
+
+        if ($ticket->is_canceled_by_user) {
+            return $this->errorResponse('This ticket has already been canceled.', 400);
+        }
+
+        $ticket->update(['is_canceled_by_user' => true]);
+
+        return $this->successResponse($ticket, 'Ticket canceled successfully!', 200);
+    }
 }
