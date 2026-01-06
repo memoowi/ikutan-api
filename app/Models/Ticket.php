@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Ticket extends Model
 {
     use HasUlids;
+    protected $guarded = [];
 
     protected $casts = [
         'checked_at' => 'datetime',
