@@ -29,10 +29,31 @@ class AuthController extends Controller
         ]);
 
         $data = [
-            'token' => $user->createToken( 'api_token' )->plainTextToken,
+            'token' => $user->createToken('auth_token')->plainTextToken,
             'user' => $user
         ];
 
         return $this->successResponse($data, 'Registration successful', 201);
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return $this->errorResponse('Invalid credentials', 401);
+        }
+
+        $data = [
+            'token' => $user->createToken('auth_token')->plainTextToken,
+            'user' => $user
+        ];
+
+        return $this->successResponse($data, 'Login successful', 200);
     }
 }
