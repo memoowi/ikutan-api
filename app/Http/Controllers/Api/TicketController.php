@@ -84,4 +84,10 @@ class TicketController extends Controller
 
         return $this->successResponse($ticket, 'Ticket retrieved successfully!', 200);
     }
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        $tickets = $user->tickets()->latest()->get();
+        return $this->successResponse($tickets, 'Tickets retrieved successfully!', 200);
+    }
 }

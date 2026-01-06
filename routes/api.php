@@ -41,4 +41,6 @@ Route::middleware(['auth:sanctum', 'role:attendee'])->group(function () {
     Route::post('/tickets', [TicketController::class, 'store']);
     // cancel ticket
     Route::patch('/tickets/{ticket}', [TicketController::class, 'cancel']);
+    // get list of tickets
+    Route::get('/tickets', [TicketController::class, 'index']);
 });
