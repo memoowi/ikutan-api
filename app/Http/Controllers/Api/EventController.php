@@ -61,4 +61,24 @@ class EventController extends Controller
 
         return $this->successResponse($events, 'Events fetched successfully', 200);
     }
+    public function show(Request $request, Event $event)
+    {
+        $userRole = $request->user()->role;
+        // 1. Check for Unauthorized roles early (Guard Clause)
+        if (!in_array($userRole, ['admin', 'staff', 'attendee'])) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
+
+
+        // 2. Apply logic based on role
+        if ($userRole === 'attendee') {
+            // Attendees only need the count of active tickets
+            $event->loadCount(['tickets' => fn($q) => $q->where('is_canceled_by_user', false)]);
+        } else {
+            // Admin/Staff need the actual ticket data (list of people)
+            $event->load(['tickets' => fn($q) => $q->where('is_canceled_by_user', false)]);
+        }
+
+        return $this->successResponse($event, 'Event fetched successfully');
+    }
 }
