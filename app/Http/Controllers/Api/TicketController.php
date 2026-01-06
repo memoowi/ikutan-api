@@ -76,4 +76,12 @@ class TicketController extends Controller
 
         return $this->successResponse($ticket, 'Ticket canceled successfully!', 200);
     }
+    public function show(Request $request, Ticket $ticket)
+    {
+        if ($ticket->user_id !== $request->user()->id && $request->user()->role == 'attendee') {
+            return $this->errorResponse('You are not authorized to view this ticket.', 403);
+        }
+
+        return $this->successResponse($ticket, 'Ticket retrieved successfully!', 200);
+    }
 }

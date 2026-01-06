@@ -23,6 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/events', [EventController::class, 'index']);
     // get single event
     Route::get('/events/{event}', [EventController::class, 'show']);
+    // get ticket details
+    Route::get('/tickets/{ticket}', [TicketController::class, 'show']);
 });
 
 // Admin Only
