@@ -44,3 +44,9 @@ Route::middleware(['auth:sanctum', 'role:attendee'])->group(function () {
     // get list of tickets
     Route::get('/tickets', [TicketController::class, 'index']);
 });
+
+// Staff Only
+Route::middleware(['auth:sanctum', 'role:staff'])->group(function () {
+    // check in ticket
+    Route::patch('/check-in', [TicketController::class, 'checkIn']);
+});

@@ -90,4 +90,24 @@ class TicketController extends Controller
         $tickets = $user->tickets()->latest()->get();
         return $this->successResponse($tickets, 'Tickets retrieved successfully!', 200);
     }
+    public function checkIn(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|exists:tickets,code'
+        ]);
+
+        $ticket = Ticket::where('code', $request->code)->firstOrFail();
+
+        if ($ticket->is_canceled_by_user) {
+            return $this->errorResponse('This ticket has already been canceled.', 400);
+        }
+
+        if ($ticket->checked_at) {
+            return $this->errorResponse('This ticket has already been used.', 400);
+        }
+
+        $ticket->update(['checked_at' => now()]);
+
+        return $this->successResponse($ticket, 'Ticket checked in successfully!', 200);
+    }
 }
