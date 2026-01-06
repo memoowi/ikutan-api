@@ -8,5 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     use HasUlids;
-    //
+    
+    protected $guarded = [];
+
+    protected $casts = [
+        'images' => 'array',
+        'date' => 'datetime',
+        'isActive' => 'boolean',
+    ];
 }

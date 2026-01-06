@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->ulid('id')->primary();
+            $table->string('name');
+            $table->text('desc');
+            $table->json('images');
+            $table->timestamp('date');
+            $table->integer('max_reservation');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
