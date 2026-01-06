@@ -13,4 +13,14 @@ class Ticket extends Model
         'checked_at' => 'datetime',
         'is_canceled_by_user' => 'boolean',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
