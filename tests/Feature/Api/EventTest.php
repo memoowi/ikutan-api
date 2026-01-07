@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Event;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -55,4 +56,22 @@ test('admin can create event', function () use ($eventData) {
 
     // Memastikan file tersimpan di storage
     Storage::disk('public')->exists('events/' . $image->hashName());
+});
+
+test('user can get all events', function () {
+    // Buat 1 event aktif dan 1 event tidak aktif
+    Event::factory(10)->create(['is_active' => true, 'name' => 'Event Aktif']);
+    Event::factory(10)->create(['is_active' => false, 'name' => 'Event Tutup']);
+
+    // Attendee
+    $response = asAttendee()->getJson('/api/events');
+    $response->assertStatus(200);
+    // Attendee biasa tidak boleh melihat event yang non-aktif
+    expect($response->json('data'))->toHaveCount(10);
+    expect($response->json('data.0.name'))->toBe('Event Aktif');
+
+    // Admin
+    $response = asAdmin()->getJson('/api/events');
+    $response->assertStatus(200);
+    expect($response->json('data'))->toHaveCount(20);
 });
