@@ -96,3 +96,16 @@ test('user can get an event details', function () {
     expect($response->json('data.tickets_count'))->toBeEmpty();
     expect($response->json('data.tickets'))->not->toBeEmpty();
 });
+
+test('admin can toggle event status', function () {
+    $event = Event::factory()->create(['is_active' => true]);
+
+    // Request ke route patch toggle
+    $response = asAdmin()->patchJson("/api/events/{$event->id}");
+
+    $response->assertStatus(200);
+    
+    // Refresh data dari DB dan pastikan status berubah menjadi false
+    $event->refresh();
+    expect($event->is_active)->toBeFalse();
+});
