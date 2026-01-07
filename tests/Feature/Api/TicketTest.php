@@ -40,3 +40,20 @@ test('attendee can cancel their ticket', function () {
     // Verifikasi status di database berubah
     expect($ticket->refresh()->is_canceled_by_user)->toBeTrue();
 });
+
+test('attendee can get their tickets details and list', function () {
+    $user = User::factory()->create(['role' => 'attendee']);
+    $tickets = Ticket::factory()->count(2)->create(['user_id' => $user->id]);
+
+    $actingUser = $this->actingAs($user, 'sanctum');
+
+    // 1. Test List Tiket
+    $listResponse = $actingUser->getJson('/api/tickets');
+    $listResponse->assertStatus(200);
+    expect($listResponse->json('data'))->toHaveCount(2);
+
+    // 2. Test Detail Tiket
+    $detailResponse = $actingUser->getJson("/api/tickets/{$tickets[0]->id}");
+    $detailResponse->assertStatus(200);
+    expect($detailResponse->json('data.id'))->toBe($tickets[0]->id);
+});
