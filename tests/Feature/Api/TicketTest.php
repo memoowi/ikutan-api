@@ -2,6 +2,7 @@
 
 use App\Models\Event;
 use App\Models\Ticket;
+use App\Models\User;
 
 test('attendee can create ticket', function () {
     $event = Event::factory()->create(['is_active' => true]);
@@ -27,3 +28,15 @@ test('attendee cant create ticket on full event', function () {
     expect($response->json('message'))->toContain('fully booked');
 });
 
+test('attendee can cancel their ticket', function () {
+    $event = Event::factory()->create(['is_active' => true]);
+    $user = User::factory()->create(['role' => 'attendee']);
+    $ticket = Ticket::factory()->create(['user_id' => $user->id, 'event_id' => $event->id, 'is_canceled_by_user' => false]);
+
+    $response = $this->actingAs($user)->patchJson("/api/tickets/{$ticket->id}");
+
+    $response->assertStatus(200);
+
+    // Verifikasi status di database berubah
+    expect($ticket->refresh()->is_canceled_by_user)->toBeTrue();
+});
