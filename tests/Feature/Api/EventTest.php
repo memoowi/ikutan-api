@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Event;
+use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -28,7 +29,7 @@ $eventData = [
     'desc' => 'Belajar integrasi API Laravel dan Flutter',
     'date' => '2026-05-20 09:00:00',
     'max_reservation' => 50,
-    'is_active' => true
+    'is_active' => true,
 ];
 
 test('admin can create event', function () use ($eventData) {
@@ -74,4 +75,24 @@ test('user can get all events', function () {
     $response = asAdmin()->getJson('/api/events');
     $response->assertStatus(200);
     expect($response->json('data'))->toHaveCount(20);
+});
+
+test('user can get an event details', function () {
+    $event = Event::factory()
+        ->has(Ticket::factory(10))
+        ->create(['is_active' => true]);
+
+    // Attendee get details with active ticket count only
+    $response = asAttendee()->getJson("/api/events/{$event->id}");
+    $response->assertStatus(200);
+    expect($response->json('data.id'))->toBe($event->id);
+    expect($response->json('data.tickets_count'))->not->toBeEmpty();
+    expect($response->json('data.tickets'))->toBeEmpty();
+
+    // Admin get details with all tickets data
+    $response = asAdmin()->getJson("/api/events/{$event->id}");
+    $response->assertStatus(200);
+    expect($response->json('data.id'))->toBe($event->id);
+    expect($response->json('data.tickets_count'))->toBeEmpty();
+    expect($response->json('data.tickets'))->not->toBeEmpty();
 });
