@@ -57,3 +57,29 @@ test('attendee can get their tickets details and list', function () {
     $detailResponse->assertStatus(200);
     expect($detailResponse->json('data.id'))->toBe($tickets[0]->id);
 });
+
+test('staff can checkin active ticket and cannot checkin canceled ticket or checked ticket', function () {
+    // active ticket
+    $ticket = Ticket::factory()->create(['is_canceled_by_user' => false]);
+
+    $response = asStaff()->patchJson("/api/check-in",[
+        'code' => $ticket->code
+    ]);
+
+    $response->assertStatus(200);
+    expect($ticket->refresh()->checked_at)->not->toBeNull();
+
+    // canceled ticket
+    $canceledTicket = Ticket::factory()->create(['is_canceled_by_user' => true]);
+    $response = asStaff()->patchJson("/api/check-in",[
+        'code' => $canceledTicket->code
+    ]);
+    $response->assertStatus(400);
+
+    // checked ticket
+    $checkedTicket = Ticket::factory()->create(['checked_at' => now()]);
+    $response = asStaff()->patchJson("/api/check-in",[
+        'code' => $checkedTicket->code
+    ]);
+    $response->assertStatus(400);
+});
